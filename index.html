@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoLumens | Plan Maestro Integrado 2025</title>
+    
+    <!-- Fuentes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuración Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'industrial-grey': '#1a1a1a',
+                        'darker-grey': '#0f0f0f',
+                        'neon-green': '#39ff14',
+                        'neon-blue': '#00f3ff',
+                        'sena-orange': '#ff6b00',
+                        'text-main': '#e0e0e0',
+                        'text-sec': '#9ca3af',
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0f0f0f; color: #e0e0e0; overflow: hidden; }
+        
+        /* Fondo Cyber */
+        .tech-watermark {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center; opacity: 0.05; z-index: -2;
+            filter: grayscale(100%) contrast(120%); mix-blend-mode: luminosity;
+            transition: background-image 0.5s ease-in-out;
+        }
+        .grid-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; z-index: -1;
+        }
+
+        /* Paneles */
+        .section-panel {
+            display: none; opacity: 0; height: calc(100vh - 160px); overflow-y: auto; padding-bottom: 8rem;
+        }
+        .section-panel.active { display: block; opacity: 1; animation: slideIn 0.5s ease-out forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
+        .btn-cyber {
+            position: relative; overflow: hidden; transition: all 0.3s;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        }
+        .btn-cyber:hover { box-shadow: 0 0 15px currentColor; transform: scale(1.02); }
+
+        .cyber-card {
+            background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        .cyber-card:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.3); }
+
+        .cyber-img {
+            width: 100%; height: 250px; object-fit: cover;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+        }
+        
+        .cyber-img-small {
+            width: 100%; height: 180px; object-fit: cover;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+        }
+
+        /* Tablas de Costos */
+        .cost-table { width: 100%; text-align: left; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
+        .cost-table th { background: rgba(0, 243, 255, 0.1); padding: 12px; font-family: 'Orbitron'; font-size: 0.75rem; color: #00f3ff; border-bottom: 2px solid rgba(0, 243, 255, 0.3); letter-spacing: 1px; }
+        .cost-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .cost-table tr:hover td { background: rgba(57, 255, 20, 0.05); }
+        .total-row td { border-top: 1px solid #39ff14; color: #39ff14; font-weight: bold; padding-top: 12px; font-size: 1.1em; background: rgba(57, 255, 20, 0.05); }
+
+        /* Detalles Desplegables */
+        details { width: 100%; }
+        details summary { cursor: pointer; list-style: none; transition: 0.3s; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 5px; margin-bottom: 5px; }
+        details summary:hover { background: rgba(255,255,255,0.08); border-color: #00f3ff; }
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary { color: #39ff14; border-color: #39ff14; background: rgba(57, 255, 20, 0.05); }
+        
+        /* Scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #39ff14; }
+
+        .step-dot { transition: all 0.3s; }
+        .step-dot.active { background-color: #39ff14; box-shadow: 0 0 10px #39ff14; transform: scale(1.5); }
+        .step-dot.completed { background-color: #00f3ff; }
+        
+        h3 { color: white; margin-bottom: 1rem; padding-bottom: 0.5rem; display: block; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        h4 { font-family: 'Orbitron'; margin-bottom: 0.5rem; color: #e0e0e0; }
+        
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; font-family: 'Orbitron'; letter-spacing: 1px; }
+        .badge-green { background: rgba(57, 255, 20, 0.1); color: #39ff14; border: 1px solid #39ff14; }
+        .badge-blue { background: rgba(0, 243, 255, 0.1); color: #00f3ff; border: 1px solid #00f3ff; }
+        .badge-orange { background: rgba(255, 107, 0, 0.1); color: #ff6b00; border: 1px solid #ff6b00; }
+    </style>
+</head>
+<body class="font-rajdhani selection:bg-neon-green selection:text-black">
+
+    <div class="tech-watermark" id="bg-layer"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- HEADER -->
+    <header class="fixed top-0 w-full z-50 bg-black/95 border-b border-white/10 h-20 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goToSlide(0)">
+                <div class="w-10 h-10 border-2 border-neon-green rounded bg-black/50 flex items-center justify-center shadow-[0_0_15px_rgba(57,255,20,0.3)]">
+                    <svg class="w-6 h-6 text-neon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="font-orbitron text-2xl font-bold tracking-widest text-white leading-none">ECO<span class="text-neon-green">LUMENS</span></h1>
+                    <span class="text-[10px] text-text-sec tracking-[0.3em] uppercase">FabLab Rural</span>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-4">
+                <span class="text-xs text-neon-blue font-orbitron mr-2" id="step-label">INICIO</span>
+                <div class="flex gap-2" id="dots-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="pt-24 pb-24 px-4 h-screen max-w-7xl mx-auto relative">
+
+        <!-- 0. HERO -->
+        <div class="section-panel custom-scroll active" id="section-0">
+            <div class="flex flex-col items-center justify-center h-full text-center">
+                <div class="inline-block mb-6 px-6 py-2 border border-neon-blue rounded-full bg-neon-blue/10 backdrop-blur-md">
+                    <span class="text-neon-blue font-orbitron tracking-[0.2em] text-sm font-bold">EXPEDIENTE MAESTRO 2025</span>
+                </div>
+                <h2 class="font-orbitron text-5xl md:text-7xl font-black mb-8 leading-tight text-white drop-shadow-[0_0_20px_rgba(57,255,20,0.4)]">
+                    SEGURIDAD RURAL <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-green to-neon-blue">INTELIGENTE</span>
+                </h2>
+                <p class="font-rajdhani text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 font-light bg-black/60 p-6 rounded-xl border border-white/10">
+                    Laboratorio de Manufactura Electrónica y Reingeniería. <br>
+                    <span class="text-neon-green font-bold">Cero Fundición.</span> 
+                    <span class="text-neon-blue font-bold">100% Inclusión.</span> 
+                    <span class="text-sena-orange font-bold">TRL 9 Validado.</span>
+                </p>
+                <div class="flex gap-4 justify-center">
+                    <button onclick="nextSlide()" class="btn-cyber px-10 py-4 bg-neon-green text-black font-orbitron font-bold text-lg hover:text-black">
+                        VER DOCUMENTO COMPLETO
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. IDENTIFICACIÓN Y PROPUESTA DE VALOR -->
+        <div class="section-panel custom-scroll" id="section-1">
+            <div class="flex items-center gap-4 mb-8 border-b border-sena-orange/50 pb-4 sticky top-0 bg-black/90 backdrop-blur z-10 pt-2">
+                <div class="text-4xl">🆔</div>
+                <div>
+                    <h2 class="font-orbitron text-3xl font-bold text-white">1. IDENTIFICACIÓN Y <span class="text-sena-orange">VALOR</span></h2>
+                    <p class="text-text-sec text-sm">El origen de la innovación social y técnica.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-12">
+                <!-- Perfil del Protagonista -->
+                <div class="cyber-card rounded-xl border-l-4 border-l-sena-orange overflow-hidden flex flex-col md:flex-row">
+                    <div class="md:w-1/3 relative bg-gray-800 h-64 md:h-auto">
+                        <img id="img-founder" src="" class="w-full h-full object-cover opacity-90">
+                        <div class="absolute bottom-0 left-0 w-full p-4 bg-black/70">
+                            <h3 class="font-orbitron text-lg font-bold text-white m-0 border-0">EL FUNDADOR</h3>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 p-8">
+                        <h4 class="text-sena-orange font-orbitron font-bold mb-4 text-xl">NARRATIVA DE RESILIENCIA</h4>
+                        <p class="text-lg text-text-main mb-4 leading-relaxed text-justify">
+                            Soy <strong>Ingeniero Electrónico y Técnico Electricista SENA</strong>, con matrícula profesional vigente. Mi perfil representa la superación de barreras: como <strong>Víctima del Conflicto Armado (RUV)</strong> y persona en condición de discapacidad (<strong>Parkinson Rígido</strong>), he convertido mi experiencia de vida en un motor de innovación técnica.
+                        </p>
+                        <p class="text-text-main leading-relaxed text-justify border-l-2 border-sena-orange pl-4">
+                            "Lidero un equipo intergeneracional que une la experiencia manual de <strong>Adultos Mayores</strong> con la destreza digital de <strong>Jóvenes Aprendices</strong>, demostrando que la limitación física no apaga la capacidad intelectual."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Concepto de Negocio -->
+                <div class="cyber-card rounded-xl border-l-4 border-l-neon-blue overflow-hidden flex flex-col md:flex-row">
+                    <div class="md:w-1/3 relative bg-gray-800 h-64 md:h-auto">
+                        <img id="img-concept" src="" class="w-full h-full object-cover opacity-90">
+                        <div class="absolute bottom-0 left-0 w-full p-4 bg-black/70">
+                            <h3 class="font-orbitron text-lg font-bold text-white m-0 border-0">EL CONCEPTO</h3>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 p-8">
+                        <h4 class="text-neon-blue font-orbitron font-bold mb-4 text-xl">FABLAB RURAL DE REMANUFACTURA</h4>
+                        <p class="text-text-main mb-6 text-justify">
+                            <strong>EcoLumens</strong> es una planta de <strong>Remanufactura Limpia y Reingeniería Electrónica</strong>. Transformamos pasivos ambientales (luminarias de alumbrado público desechadas) en sistemas de <strong>Infraestructura de Seguridad Integrada</strong>.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white/5 p-4 rounded border border-white/10">
+                                <strong class="text-white block mb-2 font-orbitron">EL PROBLEMA</strong>
+                                <p class="text-sm text-text-sec text-justify">Municipios y Fincas pagan más de $1.2 Millones por instalar "Luz + Cámara" por separado. Además, desechan toneladas de aluminio de alta calidad.</p>
+                            </div>
+                            <div class="bg-neon-blue/10 p-4 rounded border border-neon-blue/30">
+                                <strong class="text-neon-blue block mb-2 font-orbitron">LA SOLUCIÓN</strong>
+                                <p class="text-sm text-text-sec text-justify">Iluminación LED (100W-160W) + Videovigilancia Wi-Fi + Protección Eléctrica en un solo módulo. Costos -40% y Huella de Carbono Cero.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validación Técnica -->
+                <div class="cyber-card p-6 border-t-4 border-t-neon-green">
+                    <h3 class="font-orbitron text-xl font-bold text-neon-green mb-2">VALIDACIÓN TÉCNICA (TRL 9)</h3>
+                    <p class="text-text-main">
+                        Nuestros sistemas cuentan con <strong>Prueba de Campo Exitosa (+24 Meses)</strong> operando en condiciones extremas de humedad e inestabilidad eléctrica en el <strong>Alto Putumayo</strong>, validando la robustez de la reingeniería térmica y la estanqueidad IP65 en entornos reales.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. PORTAFOLIO DE PRODUCTOS Y COSTOS -->
+        <div class="section-panel custom-scroll" id="section-2">
+            <div class="flex items-center gap-4 mb-8 border-b border-neon-green/50 pb-4 sticky top-0 bg-black/90 backdrop-blur z-10 pt-2">
+                <div class="text-4xl">📦</div>
+                <div>
+                    <h2 class="font-orbitron text-3xl font-bold text-white">2. PORTAFOLIO Y <span class="text-neon-green">COSTOS</span></h2>
+                    <p class="text-text-sec text-sm">Ingeniería de detalle: Materia Prima y Mano de Obra.</p>
+                </div>
+            </div>
+
+            <div class="space-y-12">
+                
+                <!-- PRODUCTO A: MINI-ESTADIO -->
+                <div class="cyber-card rounded-xl border border-gray-700 overflow-hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3">
+                        <div class="relative h-64 md:h-auto">
+                            <img id="img-prod-a" src="" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4">
+                                <span class="badge badge-green">PRODUCTO ESTRELLA</span>
+                            </div>
+                        </div>
+                        <div class="col-span-2 p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-orbitron text-2xl font-bold text-white m-0 border-0">A. MINI-ESTADIO (8 FOCOS)</h3>
+                                    <div class="text-right">
+                                        <div class="text-neon-green font-orbitron text-3xl font-bold">$750.000</div>
+                                        <div class="text-xs text-gray-500">PVP Sugerido</div>
+                                    </div>
+                                </div>
+                                <p class="text-text-main mb-4 text-sm">Arreglo de alta potencia (160W) con brazo corto, ideal para fachadas, patios de café o perímetros. Sustituye reflectores costosos de 200W.</p>
+                                <p class="text-sm text-text-sec mb-4"><strong>Cliente:</strong> Fincas Agroturísticas, Zonas de Carga.</p>
+                            </div>
+                            
+                            <details class="mt-4" open>
+                                <summary class="font-orbitron text-sm text-neon-blue flex justify-between items-center">
+                                    <span>▼ DESGLOSE DE COSTOS UNITARIOS (MATERIA PRIMA)</span>
+                                </summary>
+                                <div class="p-2">
+                                    <table class="cost-table">
+                                        <thead><tr><th>ÍTEM</th><th>DETALLE TÉCNICO</th><th>VALOR</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>Iluminación</td><td>8 Mini Reflectores LED 20W ($15k c/u)</td><td>$120.000</td></tr>
+                                            <tr><td>Soporte Óptico</td><td>Ángulo Metálico + Soldadura (Araña)</td><td>$40.000</td></tr>
+                                            <tr><td>Brazo Medio</td><td>Tubería EMT 3/4" x 1.5m (Curvada)</td><td>$20.000</td></tr>
+                                            <tr><td>Control</td><td>Fotocelda Electrónica + Base NEMA</td><td>$50.000</td></tr>
+                                            <tr><td>Cableado</td><td>Cable Encauchetado 3x16 (4.5m)</td><td>$20.250</td></tr>
+                                            <tr><td>Insumos</td><td>Pintura, Cinta Bandit, Fijación</td><td>$30.000</td></tr>
+                                            <tr><td>Mano de Obra</td><td>Corte y Ensamble (4 Horas)</td><td>$35.000</td></tr>
+                                            <tr class="total-row"><td>COSTO TOTAL</td><td>PRODUCCIÓN DIRECTA</td><td>$315.250</td></tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="mt-2 text-right font-bold text-neon-green font-orbitron text-lg">MARGEN BRUTO: 58% ($434.750)</div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCTO B: VIAL RETROFIT -->
+                <div class="cyber-card rounded-xl border border-gray-700 overflow-hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3">
+                        <div class="relative h-64 md:h-auto">
+                            <img id="img-prod-b" src="" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4">
+                                <span class="badge badge-blue">MASIVO B2G</span>
+                            </div>
+                        </div>
+                        <div class="col-span-2 p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-orbitron text-2xl font-bold text-white m-0 border-0">B. VIAL RETROFIT (50W)</h3>
+                                    <div class="text-right">
+                                        <div class="text-neon-green font-orbitron text-3xl font-bold">$380.000</div>
+                                        <div class="text-xs text-gray-500">PVP Sugerido</div>
+                                    </div>
+                                </div>
+                                <p class="text-text-main mb-4 text-sm">Carcasa de Sodio recuperada con núcleo LED nuevo de 50W. Sin protecciones internas (se instalan en el tablero). Precio imbatible.</p>
+                                <p class="text-sm text-text-sec mb-4"><strong>Cliente:</strong> Juntas de Acción Comunal (JAC), Veredas.</p>
+                            </div>
+                            
+                            <details class="mt-4" open>
+                                <summary class="font-orbitron text-sm text-neon-blue flex justify-between items-center">
+                                    <span>▼ DESGLOSE DE COSTOS UNITARIOS</span>
+                                </summary>
+                                <div class="p-2">
+                                    <table class="cost-table">
+                                        <thead><tr><th>ÍTEM</th><th>DETALLE TÉCNICO</th><th>VALOR</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>Carcasa</td><td>Aluminio Inyectado (Recuperado)</td><td>$0</td></tr>
+                                            <tr><td>Iluminación</td><td>Reflector LED 50W (Nuevo - Estructura Fija)</td><td>$25.000</td></tr>
+                                            <tr><td>Acondicionamiento</td><td>Pintura Electrostática + Sandblasting</td><td>$18.000</td></tr>
+                                            <tr><td>Control</td><td>Fotocelda Electrónica + Base NEMA</td><td>$50.000</td></tr>
+                                            <tr><td>Cableado</td><td>Encauchetado 3x16 (3m)</td><td>$13.500</td></tr>
+                                            <tr><td>Insumos</td><td>Fijación, Cinta, Empaques</td><td>$19.000</td></tr>
+                                            <tr><td>Mano de Obra</td><td>Ritmo Lean: 15 Und/Día/Técnico</td><td>$8.000</td></tr>
+                                            <tr class="total-row"><td>COSTO TOTAL</td><td>PRODUCCIÓN DIRECTA</td><td>$133.500</td></tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="mt-2 text-right font-bold text-neon-green font-orbitron text-lg">MARGEN BRUTO: 65% ($246.500)</div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OTROS PRODUCTOS (GRID DETALLADO) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Producto C: LED Re-Man -->
+                    <div class="cyber-card p-6 rounded-xl border-t-4 border-neon-blue flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-orbitron font-bold text-white text-lg">C. LED RE-MANUFACTURA</h4>
+                            <span class="badge badge-blue">PREMIUM</span>
+                        </div>
+                        <p class="text-sm text-text-sec mb-4 flex-grow">Restauración de carcasas LED modernas desechadas. Reingeniería total del driver y placa.</p>
+                        <table class="cost-table mb-4">
+                            <tbody>
+                                <tr><td>Carcasa + Donante</td><td>$40.000</td></tr>
+                                <tr><td>Reingeniería</td><td>$5.000</td></tr>
+                                <tr><td>Acabados + MO (4h)</td><td>$50.000</td></tr>
+                                <tr><td>Accesorios</td><td>$80.500</td></tr>
+                                <tr class="font-bold text-white"><td>COSTO TOTAL</td><td>$175.500</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-auto flex justify-between items-center border-t border-gray-700 pt-3">
+                            <span class="text-xs text-gray-400">Margen: 58%</span>
+                            <span class="text-white font-bold font-orbitron text-xl">$420.000</span>
+                        </div>
+                    </div>
+
+                    <!-- Producto D: Reingeniería -->
+                    <div class="cyber-card p-6 rounded-xl border-t-4 border-neon-blue bg-neon-blue/5 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-orbitron font-bold text-white text-lg">D. SERVICIO REINGENIERÍA</h4>
+                            <span class="badge badge-blue">INTANGIBLE</span>
+                        </div>
+                        <p class="text-sm text-text-sec mb-4 flex-grow">Recuperación de lotes fallidos de terceros (Garantías vencidas). Venta de conocimiento.</p>
+                        <table class="cost-table mb-4">
+                            <tbody>
+                                <tr><td>Diagnóstico</td><td>$5.000</td></tr>
+                                <tr><td>Insumos Elec.</td><td>$10.000</td></tr>
+                                <tr><td>Consumibles</td><td>$5.000</td></tr>
+                                <tr><td>Mano de Obra (2h)</td><td>$30.000</td></tr>
+                                <tr class="font-bold text-white"><td>COSTO TOTAL</td><td>$50.000</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-auto flex justify-between items-center border-t border-gray-700 pt-3">
+                            <span class="text-xs text-gray-400">Margen: 66%</span>
+                            <span class="text-white font-bold font-orbitron text-xl">$150.000</span>
+                        </div>
+                    </div>
+
+                    <!-- Producto E: Poste Metálico -->
+                    <div class="cyber-card rounded-xl border-t-4 border-white p-0 flex flex-col overflow-hidden">
+                        <div class="relative h-32 bg-gray-800">
+                            <img id="img-prod-e" src="" class="w-full h-full object-cover cyber-img-small">
+                            <div class="absolute top-2 left-2">
+                                <span class="badge bg-black/60 text-white border-white">INFRAESTRUCTURA</span>
+                            </div>
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <h4 class="font-orbitron font-bold text-white text-lg mb-2">E. POSTE METÁLICO 4.5M</h4>
+                            <p class="text-sm text-text-sec mb-4">Fabricación propia + Cimentación. Solución Llave en Mano.</p>
+                            <table class="cost-table mb-4">
+                                <tbody>
+                                    <tr><td>Materiales Taller</td><td>$155.000</td></tr>
+                                    <tr><td>Mano de Obra Taller</td><td>$20.000</td></tr>
+                                    <tr><td>Obra Civil (Sitio)</td><td>$25.000</td></tr>
+                                    <tr class="font-bold text-white"><td>COSTO TOTAL</td><td>$200.000</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="mt-auto flex justify-between items-center border-t border-gray-700 pt-3">
+                                <span class="text-xs text-gray-400">Margen: 55%</span>
+                                <span class="text-white font-bold font-orbitron text-xl">$450.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD-ONS -->
+                <div class="cyber-card p-6 border border-gray-600 bg-gray-800/50">
+                    <h3 class="font-orbitron text-lg font-bold text-white mb-4 m-0 border-0">MÓDULOS TRANSVERSALES (ADD-ONS)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-black/30 p-4 rounded border border-gray-700 hover:border-neon-blue transition-colors">
+                            <div class="flex justify-between mb-2"><strong class="text-neon-blue">TABLERO TPA</strong><span class="text-xs text-gray-500">PROT</span></div>
+                            <p class="text-xs text-gray-400 mb-2">Caja IP65 + Breaker + Varilla + Cable</p>
+                            <div class="flex justify-between text-sm pt-2 border-t border-gray-700"><span>Costo: $70k</span><span class="text-white font-bold">PVP: $140k</span></div>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded border border-gray-700 hover:border-neon-blue transition-colors">
+                            <div class="flex justify-between mb-2"><strong class="text-neon-blue">MÓDULO SMART</strong><span class="text-xs text-gray-500">IOT</span></div>
+                            <p class="text-xs text-gray-400 mb-2">Breaker Wi-Fi Control Remoto</p>
+                            <div class="flex justify-between text-sm pt-2 border-t border-gray-700"><span>Costo: +$45k</span><span class="text-white font-bold">PVP: +$80k</span></div>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded border border-gray-700 hover:border-neon-blue transition-colors">
+                            <div class="flex justify-between mb-2"><strong class="text-neon-blue">CÁMARA WI-FI</strong><span class="text-xs text-gray-500">SEG</span></div>
+                            <p class="text-xs text-gray-400 mb-2">Cámara IP65 + Fuente + Adaptación</p>
+                            <div class="flex justify-between text-sm pt-2 border-t border-gray-700"><span>Costo: $255k</span><span class="text-white font-bold">PVP: $450k</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 3. ESTRATEGIA COMERCIAL -->
+        <div class="section-panel custom-scroll" id="section-3">
+            <div class="flex items-center gap-4 mb-8 border-b border-neon-blue/50 pb-4 sticky top-0 bg-black/90 backdrop-blur z-10 pt-2">
+                <div class="text-4xl">🎯</div>
+                <div>
+                    <h2 class="font-orbitron text-3xl font-bold text-white">3. ESTRATEGIA <span class="text-neon-blue">COMERCIAL</span></h2>
+                    <p class="text-text-sec text-sm">Modelos de Negocio B2G, B2A y ONGs.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Modelo 1 -->
+                <div class="cyber-card p-6 rounded-xl hover:-translate-y-2 transition-transform duration-300 border-t-4 border-t-neon-green bg-gradient-to-b from-gray-800 to-black">
+                    <h3 class="font-orbitron text-xl font-bold text-white mb-2 border-0">MODELO 1: B2G</h3>
+                    <p class="text-xs text-neon-green font-bold tracking-widest mb-4">ALCALDÍAS & INSTITUCIONAL</p>
+                    
+                    <div class="mb-4">
+                        <strong class="text-white block text-sm mb-1">El Dolor:</strong>
+                        <p class="text-xs text-gray-400 text-justify">Inseguridad rural, falta de presupuesto y presión por cumplir metas ambientales de "Compras Verdes".</p>
+                    </div>
+                    
+                    <div class="bg-neon-green/5 p-3 rounded border border-neon-green/20 mb-4">
+                        <strong class="text-neon-green block text-sm mb-1">La Propuesta:</strong>
+                        <p class="text-xs text-gray-300 text-justify">"Corredores Seguros Veredales". Paquetes de 50 Luminarias + 10 Mini-Estadios. Contratación directa de mínima cuantía.</p>
+                    </div>
+
+                    <div class="border-t border-gray-700 pt-3">
+                        <strong class="text-white block text-xs mb-2">TÁCTICAS:</strong>
+                        <ul class="text-xs text-text-sec space-y-1 list-disc list-inside">
+                            <li>Presentación en Consejos de Seguridad.</li>
+                            <li>Recepción de activos (chatarra) como pago.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Modelo 2 -->
+                <div class="cyber-card p-6 rounded-xl hover:-translate-y-2 transition-transform duration-300 border-t-4 border-t-sena-orange bg-gradient-to-b from-gray-800 to-black">
+                    <h3 class="font-orbitron text-xl font-bold text-white mb-2 border-0">MODELO 2: B2A</h3>
+                    <p class="text-xs text-sena-orange font-bold tracking-widest mb-4">SENA & ACADEMIA</p>
+                    
+                    <div class="mb-4">
+                        <strong class="text-white block text-sm mb-1">La Oportunidad:</strong>
+                        <p class="text-xs text-gray-400 text-justify">El SENA necesita actualizar sus ambientes y mostrar resultados tangibles de la inversión del Fondo Emprender.</p>
+                    </div>
+                    
+                    <div class="bg-sena-orange/5 p-3 rounded border border-sena-orange/20 mb-4">
+                        <strong class="text-sena-orange block text-sm mb-1">La Propuesta:</strong>
+                        <p class="text-xs text-gray-300 text-justify">"Eco-Campus SENA". Compra pública de innovación para iluminar el centro y venta de Kits Didácticos.</p>
+                    </div>
+
+                    <div class="border-t border-gray-700 pt-3">
+                        <strong class="text-white block text-xs mb-2">TÁCTICAS:</strong>
+                        <ul class="text-xs text-text-sec space-y-1 list-disc list-inside">
+                            <li>Iluminación de senderos del Centro.</li>
+                            <li>Transferencia Tecnológica (Manuales).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Modelo 3 -->
+                <div class="cyber-card p-6 rounded-xl hover:-translate-y-2 transition-transform duration-300 border-t-4 border-t-neon-blue bg-gradient-to-b from-gray-800 to-black">
+                    <h3 class="font-orbitron text-xl font-bold text-white mb-2 border-0">MODELO 3: ONGs</h3>
+                    <p class="text-xs text-neon-blue font-bold tracking-widest mb-4">COOPERACIÓN INTERNACIONAL</p>
+                    
+                    <div class="mb-4">
+                        <strong class="text-white block text-sm mb-1">El Enfoque:</strong>
+                        <p class="text-xs text-gray-400 text-justify">"Kit de Seguridad para la Paz" en zonas PDET/ART afectadas por el conflicto.</p>
+                    </div>
+                    
+                    <div class="bg-neon-blue/5 p-3 rounded border border-neon-blue/20 mb-4">
+                        <strong class="text-neon-blue block text-sm mb-1">La Mecánica:</strong>
+                        <p class="text-xs text-gray-300 text-justify">Donación Inteligente. La ONG paga el hardware (Meta Social), la comunidad paga la instalación (Apropiación).</p>
+                    </div>
+
+                    <div class="border-t border-gray-700 pt-3">
+                        <strong class="text-white block text-xs mb-2">TÁCTICAS:</strong>
+                        <ul class="text-xs text-text-sec space-y-1 list-disc list-inside">
+                            <li>Proyectos de Infraestructura Comunitaria.</li>
+                            <li>Certificados de Donación.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marketing -->
+            <div class="cyber-card p-6 border-l-4 border-white">
+                <h3 class="font-orbitron text-lg font-bold text-white mb-4 border-0">MARKETING TÁCTICO</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <strong class="text-white block mb-1">El "Sello SENA"</strong>
+                        <p class="text-sm text-gray-400 text-justify">Etiquetado de productos con la leyenda "Tecnología desarrollada con apoyo del SENA", generando confianza inmediata en el comprador.</p>
+                    </div>
+                    <div>
+                        <strong class="text-white block mb-1">Días de Campo</strong>
+                        <p class="text-sm text-gray-400 text-justify">Eventos nocturnos en veredas ("Sancocho Comunitario") para demostrar la potencia de la luz y la nitidez de la cámara en vivo.</p>
+                    </div>
+                    <div>
+                        <strong class="text-white block mb-1">Alianza Ferretera</strong>
+                        <p class="text-sm text-gray-400 text-justify">Exhibidores funcionales en ferreterías de cabecera municipal con comisión por venta referida.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. OPERATIVO Y MAQUINARIA -->
+        <div class="section-panel custom-scroll" id="section-4">
+            <div class="flex items-center gap-4 mb-8 border-b border-white/30 pb-4 sticky top-0 bg-black/90 backdrop-blur z-10 pt-2">
+                <div class="text-4xl">⚙️</div>
+                <div>
+                    <h2 class="font-orbitron text-3xl font-bold text-white">MÓDULO <span class="text-gray-400">OPERATIVO</span></h2>
+                    <p class="text-text-sec text-sm">Procesos, Capacidad y Plan de Compras.</p>
+                </div>
+            </div>
+
+            <!-- Proceso y Capacidad -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div class="cyber-card p-6">
+                    <h3 class="font-orbitron text-white text-lg mb-4 border-0">PROCESO DE REMANUFACTURA LIMPIA</h3>
+                    <ol class="list-decimal list-inside text-sm text-gray-300 space-y-3 text-justify">
+                        <li><strong class="text-neon-green">Restauración Mecánica:</strong> Limpieza por abrasión (Sandblasting) y enderezado hidráulico. Cero químicos, cero ácidos, cero emisiones de fundición. Ahorro energético del 95%.</li>
+                        <li><strong class="text-neon-blue">Reingeniería Electrónica:</strong> Diagnóstico con Osciloscopio para salvar componentes y ensamblar nuevos núcleos de larga duración.</li>
+                        <li><strong class="text-sena-orange">Metalmecánica:</strong> Fabricación de soportes y postes en taller propio para independencia de proveedores.</li>
+                    </ol>
+                </div>
+                <div class="cyber-card p-6 flex flex-col justify-center items-center text-center">
+                    <h3 class="font-orbitron text-white text-lg mb-2 border-0">CAPACIDAD INSTALADA</h3>
+                    <p class="text-xs text-text-sec mb-4">RITMO DE COMBATE</p>
+                    <div class="text-5xl font-bold text-white mb-2">15</div>
+                    <div class="text-lg text-neon-green font-orbitron">LÁMPARAS / DÍA</div>
+                    <p class="text-xs text-gray-500 mt-2">Por Técnico (Ensamble Retrofit)</p>
+                    <div class="mt-4 pt-4 border-t border-gray-700 w-full">
+                        <span class="text-xs text-gray-400">INVENTARIO INICIAL (CONTRA PARTIDA): ~$45.9 Millones</span>
+                        <p class="text-[10px] text-gray-600 mt-1">700 Carcasas / 500 Brazos / 200 Drivers</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Maquinaria -->
+            <h3 class="font-orbitron text-xl text-white mb-4 border-0">PLAN DE COMPRAS DETALLADO (MAQUINARIA SENA)</h3>
+            <div class="overflow-x-auto cyber-card p-0 rounded-xl">
+                <table class="cost-table">
+                    <thead>
+                        <tr>
+                            <th>ÁREA</th>
+                            <th>EQUIPO</th>
+                            <th>JUSTIFICACIÓN TÉCNICA</th>
+                            <th>VALOR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="5" class="text-neon-green font-bold align-middle bg-black/20">ELECTRÓNICA</td>
+                            <td>Estación Soldadura Hakko</td>
+                            <td>Reingeniería de Drivers. Desoldadura SMD sin dañar pistas.</td>
+                            <td>$1.4M</td>
+                        </tr>
+                        <tr>
+                            <td>Osciloscopio Digital</td>
+                            <td>Diagnóstico de calidad de energía y rizado en drivers.</td>
+                            <td>$1.5M</td>
+                        </tr>
+                        <tr>
+                            <td>Fuente DC Regulada</td>
+                            <td>Pruebas de estrés "Burn-in Test" simulando fallas.</td>
+                            <td>$850k</td>
+                        </tr>
+                        <tr>
+                            <td>Microsoldador Puntos</td>
+                            <td>Soldadura de baterías/láminas sin calor excesivo.</td>
+                            <td>$1.7M</td>
+                        </tr>
+                        <tr>
+                            <td>Microscopio Digital</td>
+                            <td>Inspección de micro-soldaduras y fisuras en pistas.</td>
+                            <td>$900k</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="4" class="text-sena-orange font-bold align-middle bg-black/20">METALMECÁNICA</td>
+                            <td>Soldador Multiproceso</td>
+                            <td>MIG/TIG. Soldadura fina (carcasas) y estructural (postes).</td>
+                            <td>$3.8M</td>
+                        </tr>
+                        <tr>
+                            <td>Dobladora Hidráulica</td>
+                            <td>Curvado en frío de brazos sin deformación del calibre.</td>
+                            <td>$1.4M</td>
+                        </tr>
+                        <tr>
+                            <td>Tronzadora 14"</td>
+                            <td>Corte preciso para producción en serie de soportes.</td>
+                            <td>$1.6M</td>
+                        </tr>
+                        <tr>
+                            <td>Taladro de Banco</td>
+                            <td>Perforación vertical de precisión para flanches.</td>
+                            <td>$2.2M</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="5" class="text-white font-bold align-middle bg-black/20">ACABADOS</td>
+                            <td>Compresor 100L + Kit</td>
+                            <td>Acabado IP65 con pintura electrostática/poliuretano.</td>
+                            <td>$1.5M</td>
+                        </tr>
+                        <tr>
+                            <td>Kit Herramienta Inalámbrica</td>
+                            <td>Taladros/Atornilladores de alto torque (Eficiencia).</td>
+                            <td>$3.2M</td>
+                        </tr>
+                        <tr>
+                            <td>Cortadora Vidrio</td>
+                            <td>Corte húmedo de vidrio templado para adaptación.</td>
+                            <td>$850k</td>
+                        </tr>
+                        <tr>
+                            <td>Videoscopio Industrial</td>
+                            <td>Diagnóstico no destructivo interno de postes.</td>
+                            <td>$700k</td>
+                        </tr>
+                        <tr>
+                            <td>Mesas Trabajo (x2)</td>
+                            <td>Superficies ergonómicas y antiestáticas (SG-SST).</td>
+                            <td>$3.6M</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="p-4 text-right border-t border-gray-700 text-sena-orange font-bold font-orbitron">TOTAL SOLICITADO EN MAQUINARIA: ~$33.2 MILLONES</div>
+            </div>
+        </div>
+
+        <!-- 5. ORGANIZACIONAL -->
+        <div class="section-panel custom-scroll" id="section-5">
+            <div class="flex items-center gap-4 mb-8 border-b border-sena-orange/50 pb-4 sticky top-0 bg-black/90 backdrop-blur z-10 pt-2">
+                <div class="text-4xl">👥</div>
+                <div>
+                    <h2 class="font-orbitron text-3xl font-bold text-white">EQUIPO <span class="text-sena-orange">INCLUSIVO</span></h2>
+                    <p class="text-text-sec text-sm">4 Empleos Directos Formales.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Gerente -->
+                <div class="cyber-card p-6 rounded-xl text-center border-b-4 border-b-neon-green hover:scale-105 transition-transform">
+                    <div class="w-20 h-20 bg-gray-800 rounded-full mx-auto mb-4 border-2 border-neon-green flex items-center justify-center text-4xl">👨‍💻</div>
+                    <h4 class="font-orbitron font-bold text-white">GERENTE (TÚ)</h4>
+                    <p class="text-xs text-text-sec mb-4">Ingeniero / Víctima / Discapacidad</p>
+                    <ul class="text-xs text-left space-y-2 text-gray-400 mb-4">
+                        <li>• Dirección Técnica</li>
+                        <li>• I+D</li>
+                        <li>• Calidad ISO</li>
+                    </ul>
+                    <div class="bg-black/30 py-1 rounded text-neon-green font-bold text-sm">$2.5M</div>
+                </div>
+                
+                <!-- Técnico -->
+                <div class="cyber-card p-6 rounded-xl text-center border-b-4 border-b-neon-blue hover:scale-105 transition-transform">
+                    <div class="w-20 h-20 bg-gray-800 rounded-full mx-auto mb-4 border-2 border-neon-blue flex items-center justify-center text-4xl">⚡</div>
+                    <h4 class="font-orbitron font-bold text-white">TÉCNICO</h4>
+                    <p class="text-xs text-text-sec mb-4">Joven SENA</p>
+                    <ul class="text-xs text-left space-y-2 text-gray-400 mb-4">
+                        <li>• Soldadura SMD</li>
+                        <li>• Configuración IoT</li>
+                        <li>• Diagnóstico</li>
+                    </ul>
+                    <div class="bg-black/30 py-1 rounded text-neon-blue font-bold text-sm">$1.6M</div>
+                </div>
+                
+                <!-- Operario -->
+                <div class="cyber-card p-6 rounded-xl text-center border-b-4 border-b-sena-orange hover:scale-105 transition-transform">
+                    <div class="w-20 h-20 bg-gray-800 rounded-full mx-auto mb-4 border-2 border-sena-orange flex items-center justify-center text-4xl">🛠️</div>
+                    <h4 class="font-orbitron font-bold text-white">OPERARIO</h4>
+                    <p class="text-xs text-text-sec mb-4">Adulto Mayor</p>
+                    <ul class="text-xs text-left space-y-2 text-gray-400 mb-4">
+                        <li>• Metalmecánica</li>
+                        <li>• Pintura</li>
+                        <li>• Restauración</li>
+                    </ul>
+                    <div class="bg-black/30 py-1 rounded text-sena-orange font-bold text-sm">$1.3M</div>
+                </div>
+                
+                <!-- Auxiliar -->
+                <div class="cyber-card p-6 rounded-xl text-center border-b-4 border-b-sena-orange hover:scale-105 transition-transform">
+                    <div class="w-20 h-20 bg-gray-800 rounded-full mx-auto mb-4 border-2 border-sena-orange flex items-center justify-center text-4xl">📋</div>
+                    <h4 class="font-orbitron font-bold text-white">AUXILIAR</h4>
+                    <p class="text-xs text-text-sec mb-4">Víctima Conflicto</p>
+                    <ul class="text-xs text-left space-y-2 text-gray-400 mb-4">
+                        <li>• Logística Inversa</li>
+                        <li>• Inventarios</li>
+                        <li>• Atención JAC</li>
+                    </ul>
+                    <div class="bg-black/30 py-1 rounded text-sena-orange font-bold text-sm">$1.3M</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. FINANCIERO -->
+        <div class="section-panel custom-scroll" id="section-6">
+            <div class="flex items-center gap-4 mb-8 border-b border-neon-green/50 pb-4 sticky top-0 bg-black/90 backdrop-blur z-10 pt-2">
+                <div class="text-4xl">💰</div>
+                <div>
+                    <h2 class="font-orbitron text-3xl font-bold text-white">RESUMEN <span class="text-neon-green">FINANCIERO</span></h2>
+                    <p class="text-text-sec text-sm">Metas, Inversión y Condonación.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Estructura de Capital -->
+                <div class="cyber-card p-8 rounded-xl border border-gray-700">
+                    <h3 class="font-orbitron text-xl font-bold text-white mb-6 border-0">ESTRUCTURA DE CAPITAL</h3>
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm mb-1"><span class="text-text-sec">Recursos SENA (67%)</span><span class="text-sena-orange font-bold">$93.000.000</span></div>
+                        <div class="w-full bg-gray-800 h-4 rounded-full overflow-hidden"><div class="bg-sena-orange h-full" style="width: 67%"></div></div>
+                        <p class="text-xs text-gray-500 mt-1">Destinación: Maquinaria + Insumos + Nómina (5 Meses)</p>
+                    </div>
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm mb-1"><span class="text-text-sec">Contrapartida Propia (33%)</span><span class="text-neon-green font-bold">$45.900.000</span></div>
+                        <div class="w-full bg-gray-800 h-4 rounded-full overflow-hidden"><div class="bg-neon-green h-full" style="width: 33%"></div></div>
+                        <p class="text-xs text-gray-500 mt-1">*Inventario Activos Recuperados</p>
+                    </div>
+                    <div class="pt-4 border-t border-gray-700 flex justify-between items-center mt-auto">
+                        <span class="font-bold text-white">TOTAL PROYECTO</span>
+                        <span class="font-orbitron text-2xl font-bold text-white">$138.9M</span>
+                    </div>
+                </div>
+
+                <!-- Proyección y Condonación -->
+                <div class="space-y-6">
+                    <div class="cyber-card p-6 rounded-xl border border-neon-green/20">
+                        <h4 class="font-orbitron font-bold text-white mb-4">PROYECCIÓN AÑO 1 (ESCENARIO I+D)</h4>
+                        <p class="text-xs text-text-sec mb-4 text-justify">Escenario conservador para asegurar punto de equilibrio operativo sin comprometer la calidad de la investigación.</p>
+                        <div class="grid grid-cols-2 gap-4 text-center mb-2">
+                            <div class="bg-black/40 p-4 rounded-lg">
+                                <div class="text-xs text-gray-400 uppercase mb-1">Meta Mensual</div>
+                                <div class="text-3xl font-bold text-white">20</div>
+                                <div class="text-xs text-neon-green">Unidades Mix</div>
+                            </div>
+                            <div class="bg-black/40 p-4 rounded-lg">
+                                <div class="text-xs text-gray-400 uppercase mb-1">Ventas Año 1</div>
+                                <div class="text-3xl font-bold text-white">$180M</div>
+                                <div class="text-xs text-neon-blue">COP</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card p-6 rounded-xl bg-neon-blue/5 border border-neon-blue/20">
+                        <h4 class="font-orbitron font-bold text-neon-blue mb-2 text-sm">ESTRATEGIA DE CONDONACIÓN</h4>
+                        <p class="text-xs text-text-sec mb-2">Compensación de metas financieras con indicadores de gestión:</p>
+                        <ul class="text-xs text-gray-300 space-y-2">
+                            <li class="flex items-center gap-2"><span class="text-neon-blue">✓</span> <strong>Propiedad Intelectual:</strong> Registro de Marca y Diseño Industrial.</li>
+                            <li class="flex items-center gap-2"><span class="text-neon-blue">✓</span> <strong>Empleabilidad:</strong> Contratación Aprendiz SENA.</li>
+                            <li class="flex items-center gap-2"><span class="text-neon-blue">✓</span> <strong>Transferencia:</strong> Manual Técnico de Reingeniería.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. CONCLUSIÓN -->
+        <div class="section-panel custom-scroll" id="section-7">
+            <div class="flex flex-col items-center justify-center h-full text-center">
+                <h2 class="font-orbitron text-4xl font-bold text-white mb-8">CONCLUSIÓN ESTRATÉGICA</h2>
+                <div class="max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    <div class="cyber-card p-6 border-l-4 border-l-neon-green">
+                        <h4 class="font-bold text-neon-green mb-2">FINANCIERAMENTE BLINDADO</h4>
+                        <p class="text-sm text-text-sec text-justify">Costos de producción mínimos gracias al inventario recuperado (Carcasas $0) y procesos Lean (15 und/día), permitiendo márgenes superiores al 58%.</p>
+                    </div>
+                    <div class="cyber-card p-6 border-l-4 border-l-neon-blue">
+                        <h4 class="font-bold text-neon-blue mb-2">COMERCIALMENTE VIABLE</h4>
+                        <p class="text-sm text-text-sec text-justify">Portafolio modular que atiende desde una vereda pobre hasta una finca de lujo, con estrategias claras para Alcaldías (B2G), SENA (B2A) y ONGs.</p>
+                    </div>
+                    <div class="cyber-card p-6 border-l-4 border-l-sena-orange">
+                        <h4 class="font-bold text-sena-orange mb-2">SOCIALMENTE RESPONSABLE</h4>
+                        <p class="text-sm text-text-sec text-justify">Cumplimiento total de política de inclusión (Víctimas, Discapacidad, Adulto Mayor) bajo un modelo de Escuela Taller.</p>
+                    </div>
+                    <div class="cyber-card p-6 border-l-4 border-l-white">
+                        <h4 class="font-bold text-white mb-2">TÉCNICAMENTE SUPERIOR</h4>
+                        <p class="text-sm text-text-sec text-justify">Soluciones con protección eléctrica real (Tableros TPA), aterrizaje certificado y reingeniería electrónica validada (TRL 9).</p>
+                    </div>
+                </div>
+                <div class="mt-12">
+                    <p class="text-2xl font-orbitron text-white">ECO<span class="text-neon-green">LUMENS</span> 2025</p>
+                    <p class="text-text-sec text-sm">Iluminando la Paz con Ingeniería Local.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER NAV -->
+    <footer class="fixed bottom-0 w-full z-50 bg-black/90 border-t border-white/10 h-24 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+            <button onclick="prevSlide()" id="btn-prev" class="btn-cyber px-6 py-3 border border-gray-600 text-gray-400 font-orbitron font-bold hover:bg-gray-800 disabled:opacity-30">◄ ANTERIOR</button>
+            <div class="text-center hidden md:block">
+                <p class="text-xs text-text-sec font-mono">ECO-LUMENS SYSTEM v.2025</p>
+                <div class="flex gap-2 justify-center mt-1"><span class="w-2 h-2 rounded-full bg-neon-green animate-pulse"></span><span class="text-[10px] text-neon-green">ONLINE</span></div>
+            </div>
+            <button onclick="nextSlide()" id="btn-next" class="btn-cyber px-8 py-3 bg-neon-blue text-black font-orbitron font-bold hover:bg-white">SIGUIENTE ►</button>
+        </div>
+    </footer>
+
+    <!-- LÓGICA -->
+    <script>
+        // CONFIGURACIÓN DE IMÁGENES
+        // Reemplaza estas URLs con las rutas locales 'img/foto.jpg' o links reales.
+        const GALLERY_CONFIG = {
+            background_tech: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070',
+            founder_profile: 'img/pf.jpg',
+            concept_lab: 'img/lab.jpg',
+            product_a: 'img/a.jpg',
+            product_b: 'img/b.jpg',
+            product_e: 'img/c.jpg'
+        };
+
+        // CARGAR IMÁGENES DE FORMA SEGURA
+        function safeSetSrc(id, src) {
+            const el = document.getElementById(id);
+            if (el) el.src = src;
+        }
+
+        document.getElementById('bg-layer').style.backgroundImage = `url('${GALLERY_CONFIG.background_tech}')`;
+        safeSetSrc('img-founder', GALLERY_CONFIG.founder_profile);
+        safeSetSrc('img-concept', GALLERY_CONFIG.concept_lab);
+        safeSetSrc('img-prod-a', GALLERY_CONFIG.product_a);
+        safeSetSrc('img-prod-b', GALLERY_CONFIG.product_b);
+        safeSetSrc('img-prod-e', GALLERY_CONFIG.product_e);
+
+        // NAVEGACIÓN
+        let currentStep = 0;
+        const totalSteps = 8;
+        const labels = ["INICIO", "IDENTIFICACIÓN", "PORTAFOLIO", "ESTRATEGIA", "OPERATIVO", "EQUIPO", "FINANCIERO", "CONCLUSIÓN"];
+
+        const dotsContainer = document.getElementById('dots-container');
+        for (let i = 0; i < totalSteps; i++) {
+            const dot = document.createElement('div');
+            dot.className = `step-dot w-3 h-3 rounded-full bg-gray-700 ${i===0 ? 'active' : ''}`;
+            dotsContainer.appendChild(dot);
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.section-panel').forEach(el => { el.classList.remove('active'); el.style.display = 'none'; });
+            const currentEl = document.getElementById(`section-${currentStep}`);
+            currentEl.style.display = 'block';
+            setTimeout(() => currentEl.classList.add('active'), 10);
+
+            document.querySelectorAll('.step-dot').forEach((dot, index) => {
+                dot.className = 'step-dot w-3 h-3 rounded-full bg-gray-700';
+                if (index === currentStep) dot.classList.add('active');
+                else if (index < currentStep) dot.classList.add('completed');
+            });
+
+            document.getElementById('step-label').innerText = labels[currentStep];
+            document.getElementById('btn-prev').disabled = currentStep === 0;
+            
+            const nextBtn = document.getElementById('btn-next');
+            if (currentStep === totalSteps - 1) {
+                nextBtn.innerText = "FINALIZAR";
+                nextBtn.classList.replace('bg-neon-blue', 'bg-neon-green');
+            } else {
+                nextBtn.innerText = "SIGUIENTE ►";
+                nextBtn.classList.replace('bg-neon-green', 'bg-neon-blue');
+            }
+        }
+
+        function nextSlide() { if (currentStep < totalSteps - 1) { currentStep++; updateUI(); } }
+        function prevSlide() { if (currentStep > 0) { currentStep--; updateUI(); } }
+        function goToSlide(index) { currentStep = index; updateUI(); }
+
+        updateUI();
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+    </script>
+</body>
+</html>
